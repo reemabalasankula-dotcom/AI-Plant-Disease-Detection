@@ -1,0 +1,26 @@
+import streamlit as st
+from ultralytics import YOLO
+from PIL import Image
+
+st.title("🍅 Tomato Disease Detection")
+
+model = YOLO("best.pt")
+
+uploaded_file = st.file_uploader(
+    "Upload Tomato Leaf Image",
+    type=["jpg", "jpeg", "png", "webp"]
+)
+
+if uploaded_file:
+    image = Image.open(uploaded_file)
+
+    st.image(image, caption="Uploaded Image")
+
+    results = model.predict(image)
+
+    for r in results:
+        disease = r.names[r.probs.top1]
+        confidence = float(r.probs.top1conf)
+
+        st.success(f"Disease: {disease}")
+        st.info(f"Confidence: {confidence:.2%}")
